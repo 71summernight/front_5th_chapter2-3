@@ -2,7 +2,7 @@ import { Button } from "../../../shared/ui"
 import { Plus, Edit2, Trash2, ThumbsUp } from "lucide-react"
 import { highlightText } from "../../../shared/ui/lib/highlightText"
 import { useCommentStore } from "../../../stores/commentStore"
-import { Comment as CommentType } from "../../../types/Comment/comment"
+import { Comment as CommentType, NewCommentInput } from "../../../types/Comment/comment"
 import { shallow } from "zustand/shallow"
 import { useStoreWithEqualityFn } from "zustand/traditional"
 
@@ -14,7 +14,7 @@ export default function Comment({
   setSelectedComment,
   searchQuery,
 }: {
-  setNewComment: React.Dispatch<React.SetStateAction<Omit<CommentType, "id" | "likes">>>
+  setNewComment: React.Dispatch<React.SetStateAction<NewCommentInput>>
   postId: number
   showAddCommentDialog: { open: () => void; close: () => void }
   showEditCommentDialog: { open: () => void; close: () => void }

@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
 import { usePostQuerySync } from "../../../shared/hooks/usePostQuerySync"
 import { Post } from "../../../types/Post/post"
+import { useCommentStore } from "../../../stores/commentStore"
 
 export default function PostTable({
   searchQuery,
@@ -29,7 +30,7 @@ export default function PostTable({
   setSelectedPost: (post: Post) => void
 }) {
   const { posts, loading, selectedTag, deletePost, setSelectedTag } = usePostStore()
-
+  const fetchCommentsByPostId = useCommentStore((s) => s.fetchCommentsByPostId)
   const syncQuery = usePostQuerySync()
   const location = useLocation()
 
@@ -111,6 +112,7 @@ export default function PostTable({
                   size="sm"
                   onClick={() => {
                     setSelectedPost(post)
+                    fetchCommentsByPostId(post.id)
                     showCommentDetailDialog.open()
                   }}
                 >

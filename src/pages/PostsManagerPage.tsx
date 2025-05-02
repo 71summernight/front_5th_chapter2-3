@@ -11,18 +11,20 @@ import { usePostDialogState } from "../feature/post/hooks/usePostDialogState"
 import useCommentDialogState from "../feature/comment/hooks/useCommentDialogState"
 import { usePostManagerState } from "../feature/post/hooks/usePostManagerState"
 import CommentDetailDialog from "../feature/comment/ui/CommentDetailDialog"
+import { usePostStore } from "../stores/postStore"
 
 const PostsManager = () => {
   const { selectedComment, setSelectedComment, updateComment } = useCommentStore()
+  const { skip, limit } = usePostStore()
 
   const location = useLocation()
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search])
   const searchQuery = queryParams.get("search") || ""
 
-  const { selectedPost, setSelectedPost, newComment, setNewComment } = usePostManagerState()
+  const { selectedPost, setSelectedPost, newComment, setNewComment, selectedTag } = usePostManagerState()
   const { showAddDialog, showEditDialog } = usePostDialogState()
   const { showAddCommentDialog, showEditCommentDialog, showCommentDetailDialog } = useCommentDialogState()
-  usePostManagerEffects(selectedPost, showCommentDetailDialog)
+  usePostManagerEffects(selectedPost, selectedTag, skip, limit)
 
   return (
     <Card className="w-full max-w-6xl mx-auto">

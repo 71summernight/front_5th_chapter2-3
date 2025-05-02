@@ -2,7 +2,7 @@ import { Dialog } from "../../../shared/ui"
 import { highlightText } from "../../../shared/ui/lib/highlightText"
 import { Post } from "../../../types/Post/post"
 import Comment from "./Comment"
-import { Comment as CommentType } from "../../../types/Comment/comment"
+import { Comment as CommentType, NewCommentInput } from "../../../types/Comment/comment"
 export default function CommentDetailDialog({
   selectedPost,
   setNewComment,
@@ -20,7 +20,7 @@ export default function CommentDetailDialog({
   }
   selectedComment: CommentType | null
   selectedPost: Post | null
-  setNewComment: React.Dispatch<React.SetStateAction<Omit<CommentType, "id" | "likes">>>
+  setNewComment: React.Dispatch<React.SetStateAction<NewCommentInput>>
   showAddCommentDialog: {
     isOpen: boolean
     open: () => void

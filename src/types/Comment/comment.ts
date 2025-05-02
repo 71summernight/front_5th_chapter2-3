@@ -12,7 +12,11 @@ export type Comment = {
   likes: number
 }
 
-export type NewCommentInput = Omit<Comment, "id" | "likes">
+export type NewCommentInput = {
+  body: string
+  postId?: number
+  userId: number
+}
 
 export type CommentsMap = Record<number, Comment[]>
 

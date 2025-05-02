@@ -5,24 +5,30 @@ import { Post } from "../../../types/Post/post"
 
 export const usePostManagerEffects = (
   selectedPost: Post | null,
-  showCommentDetailDialog: {
-    isOpen: boolean
-    open: () => void
-    close: () => void
-    toggle: () => void
-  },
+  selectedTag: string | null,
+  skip: number,
+  limit: number,
 ) => {
   const fetchPosts = usePostStore((s) => s.fetchPosts)
+  const fetchTags = usePostStore((s) => s.fetchTags)
+  const fetchPostsByTag = usePostStore((s) => s.fetchPostsByTag)
   const fetchCommentsByPostId = useCommentStore((s) => s.fetchCommentsByPostId)
 
   useEffect(() => {
-    fetchPosts()
-  }, [fetchPosts])
+    fetchTags()
+  }, [fetchTags])
+
+  useEffect(() => {
+    if (selectedTag) {
+      fetchPostsByTag(selectedTag)
+    } else {
+      fetchPosts()
+    }
+  }, [skip, limit, selectedTag, fetchPostsByTag, fetchPosts])
 
   useEffect(() => {
     if (selectedPost) {
       fetchCommentsByPostId(selectedPost.id)
-      showCommentDetailDialog.open()
     }
-  }, [fetchCommentsByPostId, selectedPost, selectedPost?.id, showCommentDetailDialog])
+  }, [fetchCommentsByPostId, selectedPost, selectedPost?.id])
 }

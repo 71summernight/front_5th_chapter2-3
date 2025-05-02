@@ -11,14 +11,13 @@ export default function PostSearchFilter({ searchQuery }: { searchQuery: string 
   const selectedTag = usePostStore((s) => s.selectedTag)
   const fetchPostsByTag = usePostStore((s) => s.fetchPostsByTag)
   const setSelectedTag = usePostStore((s) => s.setSelectedTag)
-  const syncFromQueryParams = usePostStore((s) => s.syncFromQueryParams)
-  const fetchPosts = usePostStore((s) => s.fetchPosts)
-  const tags = usePostStore((s) => s.tags)
+  const searchPosts = usePostStore((s) => s.searchPosts)
   const location = useLocation()
   const navigate = useNavigate()
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search])
   const sortBy = queryParams.get("sortBy") || ""
   const sortOrder = queryParams.get("sortOrder") || ""
+  const tags = usePostStore((s) => s.tags)
 
   return (
     <div className="flex gap-4">
@@ -32,7 +31,7 @@ export default function PostSearchFilter({ searchQuery }: { searchQuery: string 
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               updateQueryParams(navigate, queryParams, { search: e.target.value })
             }
-            onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && fetchPosts()}
+            onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && searchPosts(searchQuery)}
           />
         </div>
       </div>
@@ -41,7 +40,6 @@ export default function PostSearchFilter({ searchQuery }: { searchQuery: string 
         onValueChange={(value) => {
           setSelectedTag(value)
           fetchPostsByTag(value)
-          syncFromQueryParams(new URLSearchParams(location.search))
         }}
       >
         <Select.Trigger className="w-[180px]">
@@ -49,11 +47,12 @@ export default function PostSearchFilter({ searchQuery }: { searchQuery: string 
         </Select.Trigger>
         <Select.Content>
           <Select.Item value="all">모든 태그</Select.Item>
-          {tags.map((tag: Tag) => (
-            <Select.Item key={tag.url} value={tag.slug}>
-              {tag.slug}
-            </Select.Item>
-          ))}
+          {tags?.length > 0 &&
+            tags?.map((tag: Tag) => (
+              <Select.Item key={tag.url} value={tag.slug}>
+                {tag.name}
+              </Select.Item>
+            ))}
         </Select.Content>
       </Select>
       <Select value={sortBy} onValueChange={(value) => updateQueryParams(navigate, queryParams, { sortBy: value })}>

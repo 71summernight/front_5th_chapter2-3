@@ -8,7 +8,7 @@ export interface CommentStore {
   selectedComment: Comment | null
   setSelectedComment: (comment: Comment | null) => void
   fetchCommentsByPostId: (postId: number) => Promise<void>
-  addComment: (comment: Omit<Comment, "id" | "likes">) => Promise<void>
+  addComment: (comment: NewCommentInput) => Promise<void>
   updateComment: (comment: Pick<Comment, "id" | "body">) => Promise<void>
   deleteComment: (id: number, postId: number) => Promise<void>
   likeComment: (id: number, postId: number, likes: number) => Promise<void>
@@ -98,7 +98,7 @@ export const useCommentStore = create<CommentStore>((set) => ({
       set((state) => ({
         comments: {
           ...state.comments,
-          [postId]: state.comments[postId].map((c) => (c.id === id ? { ...c, likes: data.likes } : c)),
+          [postId]: state.comments[postId].map((c) => (c.id === id ? { ...c, likes: data.likes + 1 } : c)),
         },
       }))
     } catch (e) {

@@ -20,7 +20,7 @@ interface PostStore {
   addPost: (post: Omit<Post, "id">) => Promise<void>
   updatePost: (post: Post) => Promise<void>
   deletePost: (id: number) => Promise<void>
-  syncFromQueryParams: (params: URLSearchParams) => void
+  searchPosts: (query: string) => Promise<void>
 }
 
 export const usePostStore = create<PostStore>((set, get) => ({
@@ -31,7 +31,6 @@ export const usePostStore = create<PostStore>((set, get) => ({
   tags: [],
   selectedTag: "",
   loading: false,
-
   setSkip: (skip) => set({ skip }),
   setLimit: (limit) => set({ limit }),
   setSelectedTag: (tag) => set({ selectedTag: tag }),
@@ -58,7 +57,7 @@ export const usePostStore = create<PostStore>((set, get) => ({
   fetchTags: async () => {
     try {
       const tags = await commonApi.fetchTags()
-      set({ tags: tags.map((tag: string) => ({ name: tag, slug: tag, url: `/posts/tag/${tag}` })) })
+      set({ tags: tags as Tag[] })
     } catch (err) {
       console.error("fetchTags error", err)
     }
@@ -119,12 +118,12 @@ export const usePostStore = create<PostStore>((set, get) => ({
       console.error("게시물 삭제 실패", e)
     }
   },
-
-  syncFromQueryParams: (params: URLSearchParams) => {
-    set({
-      limit: Number(params.get("limit") || 10),
-      skip: Number(params.get("skip") || 0),
-      selectedTag: params.get("tag") || "",
-    })
+  searchPosts: async (query: string) => {
+    try {
+      const data = await commonApi.searchPosts(query)
+      set({ posts: data.posts })
+    } catch (e) {
+      console.error("게시물 검색 실패", e)
+    }
   },
 }))

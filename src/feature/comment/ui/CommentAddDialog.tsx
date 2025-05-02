@@ -1,6 +1,6 @@
 import { Dialog, Textarea } from "../../../shared/ui"
 import { Button } from "../../../shared/ui/Button"
-import { Comment as CommentType } from "../../../types/Comment/comment"
+import {  NewCommentInput } from "../../../types/Comment/comment"
 import { useCommentStore } from "../../../stores/commentStore"
 export default function CommentAddDialog({
   showAddCommentDialog,
@@ -13,8 +13,8 @@ export default function CommentAddDialog({
     close: () => void
     toggle: () => void
   }
-  newComment: Omit<CommentType, "id" | "likes">
-  setNewComment: (comment: Omit<CommentType, "id" | "likes">) => void
+  newComment: NewCommentInput
+  setNewComment: (comment: NewCommentInput) => void
 }) {
   const { addComment } = useCommentStore()
   return (
@@ -29,7 +29,15 @@ export default function CommentAddDialog({
             value={newComment.body}
             onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
           />
-          <Button onClick={() => addComment(newComment)}>댓글 추가</Button>
+          <Button
+            onClick={() => {
+              addComment(newComment).then(() => {
+                showAddCommentDialog.close()
+              })
+            }}
+          >
+            댓글 추가
+          </Button>
         </div>
       </Dialog.Content>
     </Dialog>

@@ -3,19 +3,21 @@ import { Comment, FetchCommentsResponse, NewCommentInput } from "../../types/Com
 import { apiClient } from "./apiClient"
 
 export const commonApi = {
-  // POST API
-  async fetchPosts(limit: number, skip: number) {
-    return await apiClient.get<PostResponse>(`/api/posts?limit=${limit}&skip=${skip}`)
-  },
-
+  // USER API
   async fetchUsers() {
     const res = await apiClient.get<{ users: BasicUser[] }>("/api/users?limit=0&select=username,image")
     return res.users
   },
 
-  async fetchTags() {
-    const res = await apiClient.get<{ tags: string[] }>("/api/posts/tags")
-    return res.tags
+  // TAG API
+  fetchTags: async () => {
+    const res = await apiClient.get("/api/posts/tags")
+    return res
+  },
+
+  // POST API
+  async fetchPosts(limit: number, skip: number) {
+    return await apiClient.get<PostResponse>(`/api/posts?limit=${limit}&skip=${skip}`)
   },
 
   async fetchPostsByTag(tag: string, limit: number, skip: number) {
@@ -34,8 +36,11 @@ export const commonApi = {
     return await apiClient.delete(`/api/posts/${id}`)
   },
 
-  // COMMENT API
+  async searchPosts(query: string) {
+    return await apiClient.get<PostResponse>(`/api/posts/search?query=${query}`)
+  },
 
+  // COMMENT API
   async fetchComments(postId: number) {
     return await apiClient.get<FetchCommentsResponse>(`/api/comments/post/${postId}`)
   },

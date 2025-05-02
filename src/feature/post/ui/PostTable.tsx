@@ -20,7 +20,7 @@ export default function PostTable() {
   const sortBy = queryParams.get("sortBy") || ""
   const sortOrder = queryParams.get("sortOrder") || ""
 
-  if (loading) return <div>로딩중...</div>
+  if (loading) return <div className="flex justify-center p-4">로딩 중...</div>
 
   return (
     <Table>

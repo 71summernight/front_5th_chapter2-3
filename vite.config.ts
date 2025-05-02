@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react"
 
 export default defineConfig({
   plugins: [react()],
-  base: "./",
+  base: "/front_5th_chapter2-3/",
   server: {
     proxy: {
       "/api": {

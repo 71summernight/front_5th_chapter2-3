@@ -3,7 +3,7 @@ export type Reaction = {
   dislikes: number
 }
 
-export type User = {
+export type BasicUser = {
   id: number
   username: string
   image: string
@@ -17,7 +17,13 @@ export type Post = {
   reactions: Reaction
   views: number
   userId: number
-  author?: User
+  author?: BasicUser
+}
+
+export type Tag = {
+  name: string
+  slug: string
+  url: string
 }
 
 export type PostResponse = {
@@ -28,22 +34,6 @@ export type PostResponse = {
 }
 
 export type UserResponse = {
-  users: User[]
+  users: BasicUser[]
   total: number
 }
-
-export type CommentUser = {
-  id: number
-  username: string
-  fullName: string
-}
-
-export type Comment = {
-  id: number
-  body: string
-  postId: number
-  user: CommentUser
-  likes: number
-}
-
-export type CommentsMap = Record<number, Comment[]>

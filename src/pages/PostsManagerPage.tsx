@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
-import { Edit2, Plus, Search, ThumbsUp, Trash2 } from "lucide-react"
-import { Comment } from "../types/Comment/comment"
+import { Plus, Search } from "lucide-react"
+import { Comment as CommentType } from "../types/Comment/comment"
 import { Post, Tag } from "../types/Post/post"
 import { User } from "../types/User/user"
 import { Button, Card, Dialog, DialogContent, Input, Select, Textarea } from "../shared/ui"
@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { updateQueryParams } from "../shared/utils/utils"
 import { useCommentStore } from "../stores/commentStore"
 import { useToggle } from "../shared/hooks/useToggle"
+import Comment from "../feature/comment/ui/Comment"
 
 const PostsManager = () => {
   const {
@@ -30,16 +31,7 @@ const PostsManager = () => {
     updatePost,
   } = usePostStore()
 
-  const {
-    fetchCommentsByPostId,
-    comments,
-    selectedComment,
-    setSelectedComment,
-    addComment,
-    updateComment,
-    deleteComment,
-    likeComment,
-  } = useCommentStore()
+  const { fetchCommentsByPostId, selectedComment, setSelectedComment, addComment, updateComment } = useCommentStore()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -60,9 +52,9 @@ const PostsManager = () => {
     views: 0,
   })
 
-  const [newComment, setNewComment] = useState<Omit<Comment, "id" | "likes">>({
+  const [newComment, setNewComment] = useState<Omit<CommentType, "id" | "likes">>({
     body: "",
-    postId: 0,
+    postId: selectedPost?.id || undefined,
     user: {
       id: 1,
       username: "",
@@ -70,10 +62,11 @@ const PostsManager = () => {
     },
   })
 
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
-  const [showUserModal, setShowUserModal] = useState(false)
+  const showAddCommentDialog = useToggle(false)
+  const showEditCommentDialog = useToggle(false)
+  const showPostDetailDialog = useToggle(false)
+  const showUserModal = useToggle(false)
+
   const [selectedUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -87,53 +80,6 @@ const PostsManager = () => {
   useEffect(() => {
     syncFromQueryParams(new URLSearchParams(location.search))
   }, [location.search, syncFromQueryParams])
-
-  const renderComments = (postId: number) => (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">댓글</h3>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId: postId }))
-            setShowAddCommentDialog(true)
-          }}
-        >
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
-      </div>
-      <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
-            <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user.username}:</span>
-              <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId, comment.likes)}>
-                <ThumbsUp className="w-3 h-3" />
-                <span className="ml-1 text-xs">{comment.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedComment(comment)
-                  setShowEditCommentDialog(true)
-                }}
-              >
-                <Edit2 className="w-3 h-3" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => deleteComment(comment.id, postId)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
@@ -302,7 +248,7 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 댓글 추가 대화상자 */}
-      <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
+      <Dialog open={showAddCommentDialog.isOpen} onOpenChange={showAddCommentDialog.toggle}>
         <DialogContent>
           <Dialog.Header>
             <Dialog.Title>새 댓글 추가</Dialog.Title>
@@ -319,7 +265,7 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 댓글 수정 대화상자 */}
-      <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
+      <Dialog open={showEditCommentDialog.isOpen} onOpenChange={showEditCommentDialog.toggle}>
         <DialogContent>
           <Dialog.Header>
             <Dialog.Title>댓글 수정</Dialog.Title>
@@ -339,20 +285,27 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 게시물 상세 보기 대화상자 */}
-      <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
+      <Dialog open={showPostDetailDialog.isOpen} onOpenChange={showPostDetailDialog.toggle}>
         <DialogContent className="max-w-3xl">
           <Dialog.Header>
             <Dialog.Title>{highlightText(selectedPost?.title || "", searchQuery)}</Dialog.Title>
           </Dialog.Header>
           <div className="space-y-4">
             <p>{highlightText(selectedPost?.body || "", searchQuery)}</p>
-            {renderComments(selectedPost?.id || 0)}
+            <Comment
+              postId={selectedPost?.id || 0}
+              setNewComment={setNewComment}
+              showAddCommentDialog={showAddCommentDialog}
+              showEditCommentDialog={showEditCommentDialog}
+              setSelectedComment={setSelectedComment}
+              searchQuery={searchQuery}
+            />
           </div>
         </DialogContent>
       </Dialog>
 
       {/* 사용자 모달 */}
-      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
+      <Dialog open={showUserModal.isOpen} onOpenChange={showUserModal.toggle}>
         <DialogContent>
           <Dialog.Header>
             <Dialog.Title>사용자 정보</Dialog.Title>

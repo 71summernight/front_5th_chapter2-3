@@ -3,7 +3,7 @@ import { create } from "zustand"
 import type { Comment } from "../types/Comment/comment"
 import { commonApi } from "../shared/utils/apiUtils"
 
-interface CommentStore {
+export interface CommentStore {
   comments: Record<number, Comment[]>
   selectedComment: Comment | null
   setSelectedComment: (comment: Comment | null) => void
@@ -21,6 +21,7 @@ export const useCommentStore = create<CommentStore>((set) => ({
   setSelectedComment: (comment) => set({ selectedComment: comment }),
 
   fetchCommentsByPostId: async (postId) => {
+    if (postId == null) return
     try {
       const data = await commonApi.fetchComments(postId)
       set((state) => ({
@@ -34,10 +35,15 @@ export const useCommentStore = create<CommentStore>((set) => ({
   addComment: async (comment) => {
     try {
       const data = await commonApi.addComment(comment)
+      if (typeof data.postId !== "number") {
+        console.log("postId가 유효하지 않아 댓글을 추가하지 않습니다.")
+        return
+      }
+
       set((state) => ({
         comments: {
           ...state.comments,
-          [data.postId]: [...(state.comments[data.postId] || []), data],
+          [data.postId!]: [...(state.comments[data.postId!] || []), data],
         },
       }))
     } catch (e) {
@@ -48,10 +54,17 @@ export const useCommentStore = create<CommentStore>((set) => ({
   updateComment: async (comment) => {
     try {
       const data = await commonApi.updateComment(comment)
+      if (typeof data.postId !== "number") {
+        console.log("postId가 유효하지 않아 댓글 수정을 건너뜁니다.")
+        return
+      }
+
       set((state) => ({
         comments: {
           ...state.comments,
-          [data.postId]: state.comments[data.postId].map((c) => (c.id === data.id ? data : c)),
+          [data.postId!]: state.comments[data.postId!].map((comment: Comment) =>
+            comment.id === data.id ? data : comment,
+          ),
         },
       }))
     } catch (e) {
@@ -72,8 +85,12 @@ export const useCommentStore = create<CommentStore>((set) => ({
       console.error("댓글 삭제 실패", e)
     }
   },
-
   likeComment: async (id, postId, likes) => {
+    if (!postId) {
+      console.warn("postId가 없어 좋아요 요청을 무시합니다.")
+      return
+    }
+
     try {
       const data = await commonApi.likeComment(id, likes)
       set((state) => ({

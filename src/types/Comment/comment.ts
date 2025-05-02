@@ -7,7 +7,7 @@ export type CommentUser = {
 export type Comment = {
   id: number
   body: string
-  postId: number
+  postId?: number
   user: CommentUser
   likes: number
 }

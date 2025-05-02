@@ -1,5 +1,5 @@
 import { Button } from "../../../shared/ui/Button"
-import { DialogContent, Textarea } from "../../../shared/ui"
+import { Textarea } from "../../../shared/ui"
 import { Dialog } from "../../../shared/ui"
 import { Comment as CommentType } from "../../../types/Comment/comment"
 export default function CommentEditDialog({
@@ -20,7 +20,7 @@ export default function CommentEditDialog({
 }) {
   return (
     <Dialog open={showEditCommentDialog.isOpen} onOpenChange={showEditCommentDialog.toggle}>
-      <DialogContent>
+      <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>댓글 수정</Dialog.Title>
         </Dialog.Header>
@@ -35,7 +35,7 @@ export default function CommentEditDialog({
           />
           <Button onClick={() => updateComment(selectedComment!)}>댓글 업데이트</Button>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   )
 }

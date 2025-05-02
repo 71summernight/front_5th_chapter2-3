@@ -1,6 +1,5 @@
 import { Dialog, Input, Textarea } from "../../../shared/ui"
 import { Button } from "../../../shared/ui/Button"
-import { DialogContent } from "../../../shared/ui"
 import { Post } from "../../../types/Post/post"
 import { usePostStore } from "../../../stores/postStore"
 
@@ -21,7 +20,7 @@ export default function PostEditDialog({
   const { updatePost } = usePostStore()
   return (
     <Dialog open={showEditDialog.isOpen} onOpenChange={showEditDialog.toggle}>
-      <DialogContent>
+      <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>게시물 수정</Dialog.Title>
         </Dialog.Header>
@@ -45,7 +44,7 @@ export default function PostEditDialog({
           />
           <Button onClick={() => updatePost(selectedPost!)}>게시물 업데이트</Button>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   )
 }

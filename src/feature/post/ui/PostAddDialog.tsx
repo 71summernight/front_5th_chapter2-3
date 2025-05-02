@@ -2,7 +2,6 @@ import { Dialog } from "../../../shared/ui/Dialog"
 import { Button } from "../../../shared/ui/Button"
 import { Input } from "../../../shared/ui/Input"
 import { Textarea } from "../../../shared/ui/TextArea"
-import { DialogContent } from "../../../shared/ui"
 import { useState } from "react"
 import { Post } from "../../../types/Post/post"
 import { usePostStore } from "../../../stores/postStore"
@@ -29,7 +28,7 @@ export default function PostAddDialog({
 
   return (
     <Dialog open={showAddDialog.isOpen} onOpenChange={showAddDialog.toggle}>
-      <DialogContent>
+      <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>새 게시물 추가</Dialog.Title>
         </Dialog.Header>
@@ -53,7 +52,7 @@ export default function PostAddDialog({
           />
           <Button onClick={() => addPost(newPost)}>게시물 추가</Button>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   )
 }

@@ -2,23 +2,50 @@ import { Trash2, Edit2, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react
 import { Button, Table } from "../../../shared/ui"
 import { highlightText } from "../../../shared/ui/lib/highlightText"
 import { usePostStore } from "../../../stores/postStore"
-import { useToggle } from "../../../shared/hooks/useToggle"
 import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
 import { usePostQuerySync } from "../../../shared/hooks/usePostQuerySync"
+import { Post } from "../../../types/Post/post"
 
-export default function PostTable() {
+export default function PostTable({
+  searchQuery,
+  showEditDialog,
+  showCommentDetailDialog,
+  setSelectedPost,
+}: {
+  searchQuery: string
+  showCommentDetailDialog: {
+    isOpen: boolean
+    open: () => void
+    close: () => void
+    toggle: () => void
+  }
+  showEditDialog: {
+    isOpen: boolean
+    open: () => void
+    close: () => void
+    toggle: () => void
+  }
+  setSelectedPost: (post: Post) => void
+}) {
   const { posts, loading, selectedTag, deletePost, setSelectedTag } = usePostStore()
 
-  const editDialog = useToggle()
-  const detailDialog = useToggle()
   const syncQuery = usePostQuerySync()
   const location = useLocation()
 
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search])
-  const searchQuery = queryParams.get("search") || ""
   const sortBy = queryParams.get("sortBy") || ""
   const sortOrder = queryParams.get("sortOrder") || ""
+
+  const filteredPosts = useMemo(
+    () =>
+      posts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          post.body.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [posts, searchQuery],
+  )
 
   if (loading) return <div className="flex justify-center p-4">로딩 중...</div>
 
@@ -34,7 +61,7 @@ export default function PostTable() {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <Table.Row key={post.id}>
             <Table.Cell>{post.id}</Table.Cell>
             <Table.Cell>
@@ -63,7 +90,7 @@ export default function PostTable() {
             <Table.Cell>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => post.author && detailDialog.open()}
+                onClick={() => post.author && showCommentDetailDialog.open()}
               >
                 <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
                 <span>{post.author?.username}</span>
@@ -79,10 +106,17 @@ export default function PostTable() {
             </Table.Cell>
             <Table.Cell>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => detailDialog.open()}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedPost(post)
+                    showCommentDetailDialog.open()
+                  }}
+                >
                   <MessageSquare className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={editDialog.open}>
+                <Button variant="ghost" size="sm" onClick={showEditDialog.open}>
                   <Edit2 className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => deletePost(post.id)}>

@@ -1,5 +1,5 @@
 import { BasicUser, Post, PostResponse } from "../../types/Post/post"
-import { Comment } from "../../types/Comment/comment"
+import { Comment, FetchCommentsResponse, NewCommentInput } from "../../types/Comment/comment"
 import { apiClient } from "./apiClient"
 
 export const commonApi = {
@@ -37,10 +37,10 @@ export const commonApi = {
   // COMMENT API
 
   async fetchComments(postId: number) {
-    return await apiClient.get<Comment[]>(`/api/comments/post/${postId}`)
+    return await apiClient.get<FetchCommentsResponse>(`/api/comments/post/${postId}`)
   },
 
-  async addComment(comment: Omit<Comment, "id" | "likes">) {
+  async addComment(comment: NewCommentInput) {
     return await apiClient.post<Comment>("/api/comments/add", comment)
   },
 

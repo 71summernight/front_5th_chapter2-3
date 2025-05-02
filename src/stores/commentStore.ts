@@ -1,6 +1,6 @@
 // store/commentStore.ts
 import { create } from "zustand"
-import type { Comment } from "../types/Comment/comment"
+import type { Comment, NewCommentInput } from "../types/Comment/comment"
 import { commonApi } from "../shared/utils/apiUtils"
 
 export interface CommentStore {
@@ -25,17 +25,19 @@ export const useCommentStore = create<CommentStore>((set) => ({
     try {
       const data = await commonApi.fetchComments(postId)
       set((state) => ({
-        comments: { ...state.comments, [postId]: data },
+        comments: { ...state.comments, [postId]: data.comments },
       }))
     } catch (e) {
       console.error("댓글 조회 실패", e)
     }
   },
 
-  addComment: async (comment) => {
+  addComment: async (comment: NewCommentInput) => {
     try {
-      const data = await commonApi.addComment(comment)
-      if (typeof data.postId !== "number") {
+      const data: Comment = await commonApi.addComment(comment)
+
+      const postId = data.postId
+      if (typeof postId !== "number") {
         console.log("postId가 유효하지 않아 댓글을 추가하지 않습니다.")
         return
       }
@@ -43,7 +45,7 @@ export const useCommentStore = create<CommentStore>((set) => ({
       set((state) => ({
         comments: {
           ...state.comments,
-          [data.postId!]: [...(state.comments[data.postId!] || []), data],
+          [postId]: [...(state.comments[postId] || []), data],
         },
       }))
     } catch (e) {

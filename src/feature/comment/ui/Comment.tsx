@@ -30,6 +30,7 @@ export default function Comment({
     }),
     shallow,
   )
+
   return (
     <div className="mt-2">
       <div className="flex items-center justify-between mb-2">

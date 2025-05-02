@@ -12,4 +12,13 @@ export type Comment = {
   likes: number
 }
 
+export type NewCommentInput = Omit<Comment, "id" | "likes">
+
 export type CommentsMap = Record<number, Comment[]>
+
+export type FetchCommentsResponse = {
+  comments: Comment[]
+  total: number
+  skip: number
+  limit: number
+}

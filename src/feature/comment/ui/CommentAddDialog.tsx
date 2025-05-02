@@ -1,6 +1,5 @@
 import { Dialog, Textarea } from "../../../shared/ui"
 import { Button } from "../../../shared/ui/Button"
-import { DialogContent } from "../../../shared/ui"
 import { Comment as CommentType } from "../../../types/Comment/comment"
 import { useCommentStore } from "../../../stores/commentStore"
 export default function CommentAddDialog({
@@ -20,7 +19,7 @@ export default function CommentAddDialog({
   const { addComment } = useCommentStore()
   return (
     <Dialog open={showAddCommentDialog.isOpen} onOpenChange={showAddCommentDialog.toggle}>
-      <DialogContent>
+      <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>새 댓글 추가</Dialog.Title>
         </Dialog.Header>
@@ -32,7 +31,7 @@ export default function CommentAddDialog({
           />
           <Button onClick={() => addComment(newComment)}>댓글 추가</Button>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   )
 }

@@ -1,5 +1,4 @@
 import { Dialog } from "../../../shared/ui/Dialog"
-import { DialogContent } from "../../../shared/ui"
 import { useToggle } from "../../../shared/hooks/useToggle"
 import { User } from "../../../types/User/user"
 import { useRef } from "react"
@@ -10,7 +9,7 @@ export default function UserDetailDialog() {
 
   return (
     <Dialog open={showUserModal.isOpen} onOpenChange={showUserModal.toggle}>
-      <DialogContent>
+      <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>사용자 정보</Dialog.Title>
         </Dialog.Header>
@@ -43,7 +42,7 @@ export default function UserDetailDialog() {
             </p>
           </div>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   )
 }
